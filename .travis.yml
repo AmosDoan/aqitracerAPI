@@ -1,0 +1,27 @@
+language: java
+jdk:
+- oraclejdk8
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
+script: "./gradlew clean bootJar"
+install:
+- ssh-keyscan -p ${PORT} ${MOSSOL_DEPLOY_ADDRESS} 2>&1 | tee -a ${TRAVIS_HOME}/.ssh/known_hosts
+before_deploy:
+- echo "Preparing for deployment"
+- cat ~/.ssh/known_hosts
+- openssl aes-256-cbc -K $encrypted_c7599a13a005_key -iv $encrypted_c7599a13a005_iv
+  -in deploy_rsa.enc -out /tmp/deploy_rsa -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/deploy_rsa
+- ssh-add /tmp/deploy_rsa
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ssh -q -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "~/api-server/kill.sh" && rsync -r -e "ssh -q -p $MOSSOL_RSYNC_PORT" --delete-after --quiet $TRAVIS_BUILD_DIR/build/libs/* $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS:~/api-server/ && ssh -q -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "bash --login -c 'cd ~/api-server && ./start.sh'"
+  on:
+    branch: master
