@@ -6,6 +6,6 @@ spring:
 
 armeria:
   ports:
-    - port : 8080
+    - port : 8282
       protocols:
         - http
