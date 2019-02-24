@@ -86,3 +86,6 @@ target/
 *.war 
 
 .editorconfig
+
+# Log
+*.log*

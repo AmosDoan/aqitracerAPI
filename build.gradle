@@ -22,9 +22,30 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom 'com.linecorp.armeria:armeria-bom:0.79.0'
+    }
+}
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Armeria
+    compile 'com.linecorp.armeria:armeria-spring-boot-starter'
+
+    // Springboot
     compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.projectlombok:lombok:1.18.6'
+
+    // Logging
+    runtime 'ch.qos.logback:logback-classic:1.2.3'
+    runtime 'org.slf4j:log4j-over-slf4j:1.7.25'
+
+    // Unit test
+    testCompile 'junit:junit:4.12'
+    testCompile 'net.javacrumbs.json-unit:json-unit-fluent:2.2.0'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
