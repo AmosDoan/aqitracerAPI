@@ -16,7 +16,7 @@ import com.linecorp.armeria.common.HttpStatus;
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class AqitracerControllerTest {
 
-    private final HttpClient client = HttpClient.of("http://localhost:8080");
+    private final HttpClient client = HttpClient.of("http://localhost:8282");
 
     @Test
     public void successHealthCheck() {
@@ -29,6 +29,6 @@ public class AqitracerControllerTest {
     @Test
     public void successAqi() {
         final AggregatedHttpMessage response = client.get("/api/v1/aqi?latlng=test&provider=WAQI").aggregate().join();
-        assertThat(response.status()).isEqualTo(HttpStatus.OK);
+        assertThat(response.status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }
