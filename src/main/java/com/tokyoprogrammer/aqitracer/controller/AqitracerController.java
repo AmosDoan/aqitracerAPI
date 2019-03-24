@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tokyoprogrammer.aqitracer.model.AqiHistoryInfo;
 import com.tokyoprogrammer.aqitracer.model.AqiInfo;
 import com.tokyoprogrammer.aqitracer.model.CultureCourseInfo;
 import com.tokyoprogrammer.aqitracer.model.WalkCourseInfo;
@@ -25,12 +26,6 @@ public class AqitracerController {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private enum AQI_PROVIDER {
-        WAQI,
-        KECO,
-        EUROPE,
-    };
-
     private <T> T getDummyResponse(String jsonPath, Class<T> classType) throws IOException {
         // dummy data
         final String json = IOUtils
@@ -47,8 +42,7 @@ public class AqitracerController {
 
     @Get
     @Path("/api/v1/aqi")
-    public HttpResponse getAqi(@Param("current") String current, @Param("bound") String bound,
-                               @Param("provider") AQI_PROVIDER provider) {
+    public HttpResponse getAqi(@Param("current") String current, @Param("bound") String bound) {
         /*
          * TODO : logic will be replaced by below
          *
@@ -60,6 +54,26 @@ public class AqitracerController {
             response = getDummyResponse("aqi-dummy-response.json", AqiInfo.Response.class);
         } catch (IOException ignored) {
             response = new AqiInfo.Response();
+        }
+
+        return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response.toString());
+    }
+
+    @Get
+    @Path("/api/v1/aqi_history")
+    public HttpResponse getAqiHistory(@Param("current") String current, @Param("from") String from,
+                                      @Param("to") String to) {
+        /*
+         * TODO : logic will be replaced by below
+         *
+         * 1. Call WAQI,KECO,EUROPE API and deserialize to their own model class
+         * 2. Converting the response model class to our client model class (AqiInfo.Response)
+         */
+        AqiHistoryInfo.Response response;
+        try {
+            response = getDummyResponse("aqi-history-dummy-response.json", AqiHistoryInfo.Response.class);
+        } catch (IOException ignored) {
+            response = new AqiHistoryInfo.Response();
         }
 
         return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response.toString());
